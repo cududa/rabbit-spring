@@ -26,7 +26,6 @@ from rabbit_spring.models import (
     SpringSolveRequest,
     SpringSolverInputs,
     SpringSupportAnnulus,
-    solve_spring,
 )
 
 inputs = SpringSolverInputs(

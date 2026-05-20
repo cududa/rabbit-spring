@@ -5,8 +5,9 @@ from pathlib import Path
 
 import pytest
 
-from rabbit_spring import SpringModelExportRequest, SpringSolveRequest, export_spring_model, solve_spring
-from tests.test_solver import make_solver_inputs
+from rabbit_spring import export_spring_model, solve_spring
+from rabbit_spring.models import SpringModelExportRequest, SpringSolveRequest
+from tests.helpers import make_solver_inputs
 
 
 freecad_available = (
