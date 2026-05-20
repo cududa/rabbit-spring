@@ -5,7 +5,8 @@ from __future__ import annotations
 import math
 
 from .constants import INACTIVE_COILS_BY_END_TYPE
-from .models import CandidatePhysics, SpringSearchGeometry
+from .models.candidates import CandidatePhysics
+from .models.geometry import SpringSearchGeometry
 from .tokens import SpringEndType
 
 

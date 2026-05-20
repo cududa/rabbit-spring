@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from .models import MassBudgetResult, SpringForceTargets, SpringSizingConfig
+from .models.config import SpringSizingConfig
+from .models.mass import MassBudgetResult
+from .models.payloads import SpringForceTargets
 
 
 def resolve_force_targets(

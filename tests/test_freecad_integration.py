@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 from rabbit_spring import SpringModelExportRequest, SpringSolveRequest, export_spring_model, solve_spring
-from tests.test_solver import _solver_inputs
+from tests.test_solver import make_solver_inputs
 
 
 freecad_available = (
@@ -19,7 +19,7 @@ freecad_available = (
 @pytest.mark.freecad
 @pytest.mark.skipif(not freecad_available, reason="FreeCAD modules are not importable")
 def test_real_freecad_export_writes_artifacts(tmp_path: Path) -> None:
-    result = solve_spring(SpringSolveRequest(name="integration", inputs=_solver_inputs()))
+    result = solve_spring(SpringSolveRequest(name="integration", inputs=make_solver_inputs()))
     assert result.diagnostics.resolved is not None
 
     export = export_spring_model(

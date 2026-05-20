@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from .models import CandidateFit, CandidatePhysics, SpringSearchGeometry
+from .models.candidates import CandidateFit, CandidatePhysics
+from .models.geometry import SpringSearchGeometry
 from .tokens import (
     SPRING_REJECT_FORCE_ACTUATION_NON_POSITIVE,
     SPRING_REJECT_FORCE_COMPRESSED_HARD_STOP_BELOW_PREFERRED_MIN,

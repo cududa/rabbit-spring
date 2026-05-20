@@ -1,0 +1,9 @@
+{
+  "pythonVersion": "3.11",
+  "typeCheckingMode": "strict",
+  "include": ["src", "tests"],
+  "venvPath": ".",
+  "venv": ".venv",
+  "reportMissingModuleSource": "none",
+  "reportMissingTypeStubs": "none"
+}

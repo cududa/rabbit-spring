@@ -6,14 +6,14 @@ from .errors import SpringSizingError
 from .generation import run_search
 from .geometry import derive_search_geometry
 from .mass_budget import compute_mass_budget
-from .models import (
-    DomainModel,
-    MassBudgetResult,
+from .models.base import DomainModel
+from .models.config import SpringSizingConfig
+from .models.geometry import SpringSearchGeometry
+from .models.mass import MassBudgetResult
+from .models.payloads import (
     ResolvedSpringPayload,
     SpringForceTargets,
     SpringSearchDiagnosticsPayload,
-    SpringSearchGeometry,
-    SpringSizingConfig,
     SpringSolverInputs,
 )
 from .targets import resolve_force_targets

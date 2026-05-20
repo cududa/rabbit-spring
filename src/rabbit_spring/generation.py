@@ -3,14 +3,11 @@
 from __future__ import annotations
 
 from .fit import evaluate_candidate_fit
-from .models import (
-    CandidateGeometry,
-    DomainModel,
-    SpringCandidate,
-    SpringForceTargets,
-    SpringSearchGeometry,
-    SpringSizingConfig,
-)
+from .models.base import DomainModel
+from .models.candidates import CandidateGeometry, SpringCandidate
+from .models.config import SpringSizingConfig
+from .models.geometry import SpringSearchGeometry
+from .models.payloads import SpringForceTargets
 from .physics import compute_candidate_physics
 from .score import score_candidate
 from .tokens import (

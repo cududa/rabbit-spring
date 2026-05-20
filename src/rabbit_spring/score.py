@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from .models import CandidateFit, CandidatePhysics, CandidateScore, SpringForceTargets, SpringSizingConfig
+from .models.candidates import CandidateFit, CandidatePhysics, CandidateScore
+from .models.config import SpringSizingConfig
+from .models.payloads import SpringForceTargets
 from .tokens import (
     SPRING_WARN_EXPLORATORY_WIRE_DIAMETER,
     SPRING_WARN_SOLID_MARGIN_BELOW_PREFERRED,

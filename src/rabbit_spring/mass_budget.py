@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 from .constants import GRAVITY_M_S2
-from .models import (
+from .models.config import MassBudgetConfig
+from .models.mass import (
     FixedItemResult,
     GeometryItemResult,
-    MassBudgetConfig,
     MassBudgetResult,
 )
 

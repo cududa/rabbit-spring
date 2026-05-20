@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from .errors import SpringSizingError
-from .models import SpringGeometryInputs, SpringSearchGeometry, SpringSizingConfig
+from .models.config import SpringSizingConfig
+from .models.geometry import SpringGeometryInputs, SpringSearchGeometry
 
 
 def derive_search_geometry(

@@ -7,11 +7,10 @@ import json
 import math
 from typing import Any
 
-from pydantic import Field
-
 from ..constants import VISUAL_MIN_TURNS, VISUAL_RADIAL_CLEARANCE_MM
 from ..errors import SpringModelExportError
-from ..models import DomainModel, SpringModelExportRequest, SpringModelExportResult
+from ..models.base import DomainModel
+from ..models.payloads import SpringModelExportRequest, SpringModelExportResult
 from ..pitch import enforce_min_pitch_for_length
 from ..tokens import SPRING_MODEL_STATUS_EXPORTED, SpringEndType
 

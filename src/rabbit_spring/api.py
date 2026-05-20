@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from .backends.freecad import export_spring_model as export_spring_model_freecad
 from .models import (
+    SpringSearchDiagnosticsPayload,
     SpringModelExportRequest,
     SpringModelExportResult,
     SpringSolveAndExportRequest,
@@ -13,7 +14,6 @@ from .models import (
 )
 from .solver import resolve_spring
 from .tokens import SPRING_SOLVER_REASON_SIZING_NOT_CONFIGURED, SPRING_SOLVER_STATUS_NOT_REQUESTED
-from .models import SpringSearchDiagnosticsPayload
 
 
 def solve_spring(request: SpringSolveRequest) -> SpringSolveResult:

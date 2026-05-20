@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 import pytest
 
 from rabbit_spring import (
@@ -14,12 +16,17 @@ from rabbit_spring import (
     solve_spring,
 )
 from rabbit_spring.errors import SpringSizingError
-from rabbit_spring.generation import run_search
 from rabbit_spring.geometry import derive_search_geometry
-from rabbit_spring.models import CandidateFit, CandidatePhysics, ScoreWeights
+from rabbit_spring.mass_budget import compute_mass_budget
+from rabbit_spring.models import (
+    CandidateFit,
+    CandidatePhysics,
+    ScoreWeights,
+    SpringForceTargets,
+    SpringSearchGeometry,
+)
 from rabbit_spring.score import score_candidate
 from rabbit_spring.targets import resolve_force_targets
-from rabbit_spring.mass_budget import compute_mass_budget
 from rabbit_spring.tokens import (
     SPRING_REJECT_FORCE_ACTUATION_NON_POSITIVE,
     SPRING_SOLVER_STATUS_COMPUTED,
@@ -32,7 +39,6 @@ from rabbit_spring.tokens import (
     SPRING_WARN_SUPPORT_ANNULUS_OUTER_MARGIN_BELOW_PREFERRED,
 )
 from rabbit_spring.fit import evaluate_candidate_fit
-from rabbit_spring.models import SpringForceTargets, SpringSearchGeometry
 
 
 def _geometry_inputs() -> SpringGeometryInputs:
@@ -66,6 +72,14 @@ def _solver_inputs(
     )
 
 
+def make_solver_inputs(
+    *,
+    cap_volume_mm3: float = 2000.0,
+    spring_sizing: SpringSizingConfig | None = None,
+) -> SpringSolverInputs:
+    return _solver_inputs(cap_volume_mm3=cap_volume_mm3, spring_sizing=spring_sizing)
+
+
 def _search_geometry() -> SpringSearchGeometry:
     return SpringSearchGeometry(
         post_outer_diameter_mm=2.0,
@@ -87,8 +101,9 @@ def test_solve_spring_computes_candidate() -> None:
     assert result.diagnostics.top_candidates
 
     candidate = result.diagnostics.resolved.active_candidate
-    assert candidate.physics.solid_height_mm == pytest.approx(
-        candidate.physics.total_coils * candidate.geometry.wire_diameter_mm
+    assert math.isclose(
+        candidate.physics.solid_height_mm,
+        candidate.physics.total_coils * candidate.geometry.wire_diameter_mm,
     )
     assert candidate.installed_length_rest_mm > candidate.installed_length_actuation_mm
     assert candidate.installed_length_actuation_mm > candidate.installed_length_compressed_hard_stop_mm
@@ -280,8 +295,8 @@ def test_score_candidate_applies_deterministic_penalties_and_warnings() -> None:
         stress_soft_warn_above_n_per_mm2=900.0,
     )
 
-    assert score.force_score == pytest.approx(0.875)
-    assert score.candidate_score == pytest.approx(1.8483333333333334)
+    assert math.isclose(score.force_score, 0.875)
+    assert math.isclose(score.candidate_score, 1.8483333333333334)
     assert score.warnings == [
         SPRING_WARN_SPRING_INDEX_OUTSIDE_PREFERRED,
         SPRING_WARN_SOLID_MARGIN_BELOW_PREFERRED,

@@ -8,6 +8,7 @@ from rabbit_spring import (
     CandidatePhysics,
     CandidateScore,
     SpringCandidate,
+    SpringEndType,
     SpringModelExportRequest,
 )
 from rabbit_spring.backends.freecad import (
@@ -126,7 +127,11 @@ class FakeMeshPart:
         return FakeMesh()
 
 
-def _candidate(*, end_type: str = "closed_ground", inactive_coils: float = 2.0) -> SpringCandidate:
+def _candidate(
+    *,
+    end_type: SpringEndType = "closed_ground",
+    inactive_coils: float = 2.0,
+) -> SpringCandidate:
     return SpringCandidate(
         candidate_id="test",
         geometry=CandidateGeometry(
