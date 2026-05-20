@@ -2,7 +2,7 @@
 
 `rabbit-spring` is a generic compression spring solution finder for small
 compression-spring mechanisms. It is intentionally independent of any consuming
-product, CAD pipeline, or application-specific assembly model.
+product, CAD workflow, or application-specific assembly model.
 
 The package provides:
 
@@ -63,6 +63,25 @@ print(result.diagnostics.status)
 print(result.diagnostics.resolved.active_candidate)
 ```
 
+## Public API
+
+Stable function imports:
+
+```python
+from rabbit_spring import export_spring_model, solve_and_export, solve_spring
+```
+
+Stable model imports live in `rabbit_spring.models`. The public model namespace
+contains request, config, payload, candidate, geometry, mass-budget, and result
+models such as `SpringSolveRequest`, `SpringSolverInputs`,
+`SpringSizingConfig`, `SpringCandidate`, `SpringModelExportRequest`, and
+`SpringModelExportResult`.
+
+Everything below `rabbit_spring.backends.*` is private backend implementation.
+Solver search, scoring, fit, physics, geometry derivation, generation, token,
+and focused model implementation modules are also private unless promoted into
+`rabbit_spring` or `rabbit_spring.models`.
+
 ## Local Development
 
 Create the development environment and install the package editable:
@@ -96,6 +115,7 @@ Validation commands:
 .\.venv\Scripts\python -m build
 .\.venv\Scripts\python -c "import FreeCAD, Part, MeshPart; print(FreeCAD.Version())"
 .\.venv\Scripts\python -m pytest -m freecad
+.\.venv\Scripts\python -c "from rabbit_spring import solve_spring, export_spring_model, solve_and_export; from rabbit_spring.models import SpringSolveRequest, SpringSolverInputs; print(solve_spring, export_spring_model, solve_and_export, SpringSolveRequest, SpringSolverInputs)"
 ```
 
 ## FreeCAD Export
@@ -121,4 +141,5 @@ export = export_spring_model(
 print(export.output_stl)
 ```
 
-For Rhino pipelines, import the generated STL or STEP artifact.
+Import the generated STL or STEP artifact into the CAD tool that owns the final
+assembly.
