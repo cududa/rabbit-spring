@@ -7,7 +7,7 @@ from typing import Any
 
 from ...constants import VISUAL_RADIAL_CLEARANCE_MM
 from ...errors import SpringModelExportError
-from .types import SpringVisualParams
+from ._types import SpringVisualParams
 
 
 def profile_normal_for_helix(

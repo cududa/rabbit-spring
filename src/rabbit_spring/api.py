@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .backends.freecad import export_spring_model as export_spring_model_freecad
+from .backends.freecad._export import export_spring_model as export_spring_model_freecad
 from .models import (
     SpringSearchDiagnosticsPayload,
     SpringModelExportRequest,

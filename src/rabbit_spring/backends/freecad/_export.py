@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from ...models.payloads import SpringModelExportRequest, SpringModelExportResult
 from ...tokens import SPRING_MODEL_STATUS_EXPORTED
-from .loader import load_freecad_modules
-from .shapes import build_spring_model_shape
-from .types import FreeCadModules
-from .visual import resolve_visual_params
-from .writers import write_report, write_step, write_stl
+from ._loader import load_freecad_modules
+from ._shapes import build_spring_model_shape
+from ._types import FreeCadModules
+from ._visual import resolve_visual_params
+from ._writers import write_report, write_step, write_stl
 
 
 def export_spring_model(

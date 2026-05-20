@@ -5,7 +5,7 @@ from __future__ import annotations
 import importlib
 
 from ...errors import SpringModelExportError
-from .types import FreeCadModules
+from ._types import FreeCadModules
 
 
 def load_freecad_modules() -> FreeCadModules:

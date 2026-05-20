@@ -6,7 +6,7 @@ from ...constants import VISUAL_MIN_TURNS
 from ...errors import SpringModelExportError
 from ...models.payloads import SpringModelExportRequest
 from ...pitch import enforce_min_pitch_for_length
-from .types import SpringVisualParams
+from ._types import SpringVisualParams
 
 
 def resolve_visual_params(request: SpringModelExportRequest) -> SpringVisualParams:
