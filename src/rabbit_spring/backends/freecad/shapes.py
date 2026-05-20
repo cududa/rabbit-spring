@@ -1,87 +1,13 @@
-"""FreeCAD-backed spring model export."""
+"""FreeCAD shape construction for spring exports."""
 
 from __future__ import annotations
 
-import importlib
-import json
 import math
 from typing import Any
 
-from ..constants import VISUAL_MIN_TURNS, VISUAL_RADIAL_CLEARANCE_MM
-from ..errors import SpringModelExportError
-from ..models.base import DomainModel
-from ..models.payloads import SpringModelExportRequest, SpringModelExportResult
-from ..pitch import enforce_min_pitch_for_length
-from ..tokens import SPRING_MODEL_STATUS_EXPORTED, SpringEndType
-
-
-class SpringVisualParams(DomainModel):
-    centers_xy_mm: list[tuple[float, float]]
-    z0_mm: float
-    installed_height_mm: float
-    wire_diameter_mm: float
-    mean_diameter_mm: float
-    wire_radius_mm: float
-    mean_radius_mm: float
-    pitch_mm: float
-    turns: float
-    inactive_coils: float
-    end_type: SpringEndType = "open"
-
-
-class FreeCadModules(DomainModel):
-    model_config = DomainModel.model_config | {"arbitrary_types_allowed": True}
-
-    app_mod: Any
-    part_mod: Any
-    mesh_part_mod: Any
-
-
-def load_freecad_modules() -> FreeCadModules:
-    try:
-        return FreeCadModules(
-            app_mod=importlib.import_module("FreeCAD"),
-            part_mod=importlib.import_module("Part"),
-            mesh_part_mod=importlib.import_module("MeshPart"),
-        )
-    except ImportError as exc:
-        raise SpringModelExportError(
-            "FreeCAD export requires FreeCAD, Part, and MeshPart to be importable"
-        ) from exc
-
-
-def resolve_visual_params(request: SpringModelExportRequest) -> SpringVisualParams:
-    candidate = request.candidate
-    installed_height_mm = request.installed_height_mm or candidate.installed_length_rest_mm
-    if installed_height_mm <= 0.0:
-        raise SpringModelExportError("installed spring height must be > 0")
-
-    wire_diameter_mm = candidate.geometry.wire_diameter_mm
-    mean_diameter_mm = candidate.geometry.mean_diameter_mm
-    if wire_diameter_mm <= 0.0 or mean_diameter_mm <= wire_diameter_mm:
-        raise SpringModelExportError("candidate has invalid wire/mean diameter geometry")
-
-    turns = max(VISUAL_MIN_TURNS, candidate.physics.total_coils)
-    turns, pitch_mm = enforce_min_pitch_for_length(
-        length_mm=installed_height_mm,
-        turns=turns,
-        wire_diameter_mm=wire_diameter_mm,
-        min_turns=1.0,
-    )
-
-    return SpringVisualParams(
-        centers_xy_mm=request.centers_xy_mm,
-        z0_mm=request.z0_mm,
-        installed_height_mm=installed_height_mm,
-        wire_diameter_mm=wire_diameter_mm,
-        mean_diameter_mm=mean_diameter_mm,
-        wire_radius_mm=0.5 * wire_diameter_mm,
-        mean_radius_mm=0.5 * mean_diameter_mm,
-        pitch_mm=pitch_mm,
-        turns=turns,
-        inactive_coils=max(0.0, candidate.physics.inactive_coils),
-        end_type=candidate.geometry.end_type,
-    )
+from ...constants import VISUAL_RADIAL_CLEARANCE_MM
+from ...errors import SpringModelExportError
+from .types import SpringVisualParams
 
 
 def profile_normal_for_helix(
@@ -294,75 +220,3 @@ def build_spring_model_shape(*, app_mod: Any, part_mod: Any, params: SpringVisua
     for solid in solids[1:]:
         fused = fused.fuse(solid)
     return fused.removeSplitter()
-
-
-def _write_stl(*, shape: Any, mesh_part_mod: Any, request: SpringModelExportRequest) -> None:
-    request.output_stl.parent.mkdir(parents=True, exist_ok=True)
-    mesh = mesh_part_mod.meshFromShape(
-        Shape=shape,
-        LinearDeflection=request.linear_deflection_mm,
-        AngularDeflection=request.angular_deflection_deg,
-        Relative=False,
-    )
-    mesh.write(str(request.output_stl))
-
-
-def _write_step(*, shape: Any, part_mod: Any, request: SpringModelExportRequest) -> None:
-    request.output_step.parent.mkdir(parents=True, exist_ok=True)
-    if hasattr(shape, "exportStep"):
-        shape.exportStep(str(request.output_step))
-        return
-    if hasattr(part_mod, "export"):
-        part_mod.export([shape], str(request.output_step))
-        return
-    raise SpringModelExportError("FreeCAD shape/Part module cannot export STEP")
-
-
-def _write_report(
-    *,
-    request: SpringModelExportRequest,
-    result: SpringModelExportResult,
-) -> None:
-    request.output_report.parent.mkdir(parents=True, exist_ok=True)
-    payload = {
-        "export": result.model_dump(mode="json"),
-        "candidate": request.candidate.model_dump(mode="json"),
-        "mesh": {
-            "linear_deflection_mm": request.linear_deflection_mm,
-            "angular_deflection_deg": request.angular_deflection_deg,
-        },
-    }
-    request.output_report.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-
-
-def export_spring_model(
-    request: SpringModelExportRequest,
-    *,
-    modules: FreeCadModules | None = None,
-) -> SpringModelExportResult:
-    params = resolve_visual_params(request)
-    freecad_modules = modules or load_freecad_modules()
-    shape = build_spring_model_shape(
-        app_mod=freecad_modules.app_mod,
-        part_mod=freecad_modules.part_mod,
-        params=params,
-    )
-    _write_stl(shape=shape, mesh_part_mod=freecad_modules.mesh_part_mod, request=request)
-    _write_step(shape=shape, part_mod=freecad_modules.part_mod, request=request)
-
-    result = SpringModelExportResult(
-        status=SPRING_MODEL_STATUS_EXPORTED,
-        backend="freecad",
-        output_stl=request.output_stl,
-        output_step=request.output_step,
-        output_report=request.output_report,
-        centers_xy_mm=params.centers_xy_mm,
-        installed_height_mm=params.installed_height_mm,
-        wire_diameter_mm=params.wire_diameter_mm,
-        mean_diameter_mm=params.mean_diameter_mm,
-        pitch_mm=params.pitch_mm,
-        total_turns=params.turns,
-        end_type=params.end_type,
-    )
-    _write_report(request=request, result=result)
-    return result
