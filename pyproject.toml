@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rabbit-spring"
+version = "0.1.0"
+description = "Generic compression spring solution finder with optional FreeCAD-backed model export."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+authors = [
+  { name = "Rabbit Spring Contributors" },
+]
+dependencies = [
+  "pydantic>=2.12",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "freecad: integration tests that require FreeCAD, Part, and MeshPart modules",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rabbit_spring"]
