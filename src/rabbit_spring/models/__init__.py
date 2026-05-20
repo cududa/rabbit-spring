@@ -18,7 +18,6 @@ from .config import (
     SpringMassSource,
     SpringSizingConfig,
 )
-from .base import DomainModel
 from .geometry import SpringGeometryInputs, SpringSearchGeometry, SpringSupportAnnulus
 from .mass import FixedItemResult, GeometryItemResult, MassBudgetResult
 from .payloads import (
@@ -39,7 +38,6 @@ __all__ = [
     "CandidateGeometry",
     "CandidatePhysics",
     "CandidateScore",
-    "DomainModel",
     "FixedItemResult",
     "ForceBand",
     "GeometryItemResult",

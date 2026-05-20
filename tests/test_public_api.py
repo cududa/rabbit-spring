@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import get_args
 
+from pydantic import BaseModel
+
 import rabbit_spring
 import rabbit_spring.models as models
 from rabbit_spring import export_spring_model, solve_and_export, solve_spring
@@ -10,7 +12,6 @@ from rabbit_spring.models import (
     CandidateGeometry,
     CandidatePhysics,
     CandidateScore,
-    DomainModel,
     FixedItemResult,
     ForceBand,
     GeometryItemResult,
@@ -55,7 +56,6 @@ def test_models_namespace_exports_documented_models() -> None:
         "CandidateGeometry",
         "CandidatePhysics",
         "CandidateScore",
-        "DomainModel",
         "FixedItemResult",
         "ForceBand",
         "GeometryItemResult",
@@ -88,7 +88,6 @@ def test_models_namespace_exports_documented_models() -> None:
         CandidateGeometry,
         CandidatePhysics,
         CandidateScore,
-        DomainModel,
         FixedItemResult,
         ForceBand,
         GeometryItemResult,
@@ -113,5 +112,5 @@ def test_models_namespace_exports_documented_models() -> None:
         SpringSolverInputs,
         SpringSupportAnnulus,
     ]
-    assert all(issubclass(model, DomainModel) for model in imported_models)
+    assert all(issubclass(model, BaseModel) for model in imported_models)
     assert get_args(SpringMassSource) == ("cap_volume_mm3",)
