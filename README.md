@@ -13,12 +13,15 @@ The package provides:
 
 ## Quick Start
 
+The canonical public API is the package root for functions and
+`rabbit_spring.models` for typed request/config/result models:
+
 ```python
-from rabbit_spring import (
+from rabbit_spring import solve_spring
+from rabbit_spring.models import (
     ForceBand,
     MassBudgetConfig,
     SpringGeometryInputs,
-    SpringModelExportRequest,
     SpringSizingConfig,
     SpringSolveRequest,
     SpringSolverInputs,
@@ -61,6 +64,41 @@ print(result.diagnostics.status)
 print(result.diagnostics.resolved.active_candidate)
 ```
 
+## Local Development
+
+Create the development environment and install the package editable:
+
+```powershell
+py -3.11 -m venv .venv
+.\.venv\Scripts\python -m pip install --upgrade pip
+.\.venv\Scripts\python -m pip install -e ".[dev]"
+```
+
+This repository uses Python 3.11 for local CAD validation because the discovered
+FreeCAD 1.1 install is AMD64 and uses CPython 3.11. The pure solver is normal
+Python package code and does not import FreeCAD.
+
+FreeCAD is an optional runtime backend, not a pip dependency. To make the local
+`.venv` import the installed FreeCAD modules, run:
+
+```powershell
+.\tools\configure_freecad_venv.ps1
+```
+
+If FreeCAD is installed somewhere else, set `RABBIT_SPRING_FREECAD_ROOT` or pass
+`-FreeCadRoot`.
+
+Validation commands:
+
+```powershell
+.\.venv\Scripts\python -m pytest
+.\.venv\Scripts\python -m ruff check .
+.\.venv\Scripts\python -m pyright --project pyrightconfig.json
+.\.venv\Scripts\python -m build
+.\.venv\Scripts\python -c "import FreeCAD, Part, MeshPart; print(FreeCAD.Version())"
+.\.venv\Scripts\python -m pytest -m freecad
+```
+
 ## FreeCAD Export
 
 Model export requires running in an environment where `FreeCAD`, `Part`, and
@@ -68,7 +106,8 @@ Model export requires running in an environment where `FreeCAD`, `Part`, and
 
 ```python
 from pathlib import Path
-from rabbit_spring import SpringModelExportRequest, export_spring_model
+from rabbit_spring import export_spring_model
+from rabbit_spring.models import SpringModelExportRequest
 
 candidate = result.diagnostics.resolved.active_candidate
 export = export_spring_model(
